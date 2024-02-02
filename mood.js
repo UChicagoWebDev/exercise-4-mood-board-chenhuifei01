@@ -1,9 +1,6 @@
 // mood.js
-
 const bing_api_endpoint = "https://api.bing.microsoft.com/v7.0/images/search";
 const bing_api_key = BING_API_KEY;
-// declare a variable for current query
-let currentQuery = "";
 
 function runSearch() {
   // Clear previous search results
@@ -15,15 +12,11 @@ function runSearch() {
     return false;
   }
 
-  currentQuery = query;
-
   openResultsPane();
 
   // Construct the request object
   // Use XMLHTTPRequest to make an AJAX requests to the image search API
   let request = new XMLHttpRequest();
-  // TODO: Build your query by combining the bing_api_endpoint and a query attribute
-  //  named 'q' that takes the value from the search bar input field.
   // Include the search term as a url query parameter
   request.open("GET", `${bing_api_endpoint}?q=${encodeURIComponent(query)}`, true);
   // Include the correct API authorization header as required
@@ -33,6 +26,8 @@ function runSearch() {
   console.log("request: ", request);
 
   // Handle responses
+  // The onload event is triggered when the XMLHttpRequest (AJAX) request successfully completes. 
+  // This event is typically used to handle the response from the server.
   request.onload = function () {
     if (request.status === 200) {
       const results = request.response.value;
@@ -49,7 +44,9 @@ function runSearch() {
   };
 
   // Send the request 
-  // Use XMLHTTPRequest to make an AJAX request to the image search API)
+  // the ordering ensures that the request is sent off as soon as the code is executed, 
+  // and when the response is received, the onload callback handles the processing of the data. 
+  // This asynchronous approach allows other code to continue executing while waiting for the response.
   request.send();
 
   return false;
@@ -116,22 +113,33 @@ function addToMoodBoard(imageUrl) {
 // -------------------------------original script--------------------------------------
 function openResultsPane() {
   // This will make the results pane visible.
+  // <div id="resultsExpander" class="open">
   document.querySelector("#resultsExpander").classList.add("open");
 }
 
 function closeResultsPane() {
   // This will make the results pane hidden again.
+  // <div id="resultsExpander" class>
   document.querySelector("#resultsExpander").classList.remove("open");
 }
 
+// Main Script 
+// the index.html run the mood.js
+// This line adds an event listener to the "Search" button with the ID runSearchButton. 
+// When the button is clicked, it calls the runSearch function.
 document.querySelector("#runSearchButton").addEventListener("click", runSearch);
+// The use of keypress is appropriate here because it is checking for the "Enter" key, 
+// which produces a character and is typically used for form submission
 document.querySelector(".search input").addEventListener("keypress", (e) => {
   if (e.key == "Enter") {
     runSearch();
   }
 });
 
+// This line adds an event listener to the element with the ID closeResultsButton.
+// When this button is clicked, the closeResultsPane function is called.
 document.querySelector("#closeResultsButton").addEventListener("click", closeResultsPane);
+// non-character key (e.g., "Shift" or "Ctrl"), you might want to use keydown
 document.querySelector("body").addEventListener("keydown", (e) => {
   if (e.key == "Escape") {
     closeResultsPane();
